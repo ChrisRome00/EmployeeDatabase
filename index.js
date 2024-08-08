@@ -1,11 +1,27 @@
 const inquirer = require('inquirer');
+const { Pool } = require('pg');
+
+// Connect to database
+const pool = new Pool(
+    {
+      // TODO: Enter PostgreSQL username
+      user: 'postgres',
+      // TODO: Enter PostgreSQL password
+      password: 'Lani@2014',
+      host: 'localhost',
+      database: 'employee_db'
+    },
+    console.log(`Connected to the employee database.`)
+)
+
+pool.connect();
+  
 
 //Generate questions arrays
-
 const homeQuestions = [
     {
         name: ('homeChoice'),
-        message: 'What would you like to do? \n ("control" + "c" to exit)',
+        message: 'What would you like to do?',
         type: 'list',
         choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department']
     }
@@ -33,39 +49,43 @@ function init() {
             .then((response) => {
                 console.log(response.homeChoice);
                 if (response.homeChoice == 'View All Employees') {
-                    //display all employees
                     console.log('displaying all emps');
-                    // run init again
-                    init();
+                    pool.query(`SELECT employee.id AS employee_id, employee.first_name, employee.last_name, role.title AS role_title, role.salary AS role_salary, department.name AS department_name, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department = department.id LEFT JOIN employee AS manager ON employee.manager_id = manager.id;`, function (err, {rows}) {
+                        console.table(rows);
+                        init();
+                      });
+                    
                 } else if (response.homeChoice == 'Add Employee') {
                     // add employee questions
                     // run init
-                    init();
+                    
                 } else if (response.homeChoice == 'Update Employee Role') {
                     // update employee questions
                     //run init
-                    init();
+                    
                 } else if (response.homeChoice == 'View All Roles') {
                     // display all roles
                     // run init
-                    init();
+                    
                 } else if (response.homeChoice == 'Add Role') {
                     // add role question 
                     // run init
-                    init();
+                    
                 } else if (response.homeChoice == 'View All Departments') {
                     // display all depts
                     // run init
-                    init();
+                    
                 } else if (response.homeChoice == 'Add Department') {
                     // Add dept questions
                     // run init
-                    init();
+                    
                 }
-
+                
             })
+    
 }
 
 
-// Start the program
 init();
+  
+
