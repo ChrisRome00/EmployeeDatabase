@@ -41,14 +41,29 @@ function init() {
                 } else if (response.homeChoice == 'Add Employee') {
                     // add employee questions
                     // run init
+                    // inquirer.prompt([
+                    //     {
+                    //         name: "fName",
+                    //         message: "What is the employees First Name: ",
+                    //     },
+                    //     {
+                    //         name:"lName",
+                    //         message: "What is the employees Last Name"
+                    //     },
+                    //     {
+                    //         name: "newEmpRole",
+                    //         message: "What is the employees Role: "
+                    //     }
+                    // ]).then((response) => {
+                    //     
+                    //     })
+                    // })
                     
                 } else if (response.homeChoice == 'Update Employee Role') {
                     // update employee questions
                     //run init
                     
                 } else if (response.homeChoice == 'View All Roles') {
-                    // display all roles
-                    // run init
                     pool.query(`SELECT * FROM role`, function (err, res) {
                         console.table(res.rows);
                         init();
@@ -58,9 +73,9 @@ function init() {
                     pool.query('SELECT id, name FROM department')
                         .then(res => res.rows)
                             .then(departments => {
-                            const departmentChoices = departments.map(deptartment => ({
-                                name: deptment.name,
-                                value: dept.id
+                            const departmentChoices = departments.map(department => ({
+                                name: department.name,
+                                value: department.id
                         }));
 
                         return inquirer.prompt([
@@ -92,10 +107,8 @@ function init() {
                         console.table(res.rows);
                         init();
                     });
-                    // run init
                     
                 } else if (response.homeChoice == 'Add Department') {
-                    // Add dept questions
                     inquirer.prompt([
                         {
                             name: "addedDepo",
