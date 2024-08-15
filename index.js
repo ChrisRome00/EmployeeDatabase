@@ -39,25 +39,50 @@ function init() {
                       });
                     
                 } else if (response.homeChoice == 'Add Employee') {
-                    // add employee questions
-                    // run init
-                    // inquirer.prompt([
-                    //     {
-                    //         name: "fName",
-                    //         message: "What is the employees First Name: ",
-                    //     },
-                    //     {
-                    //         name:"lName",
-                    //         message: "What is the employees Last Name"
-                    //     },
-                    //     {
-                    //         name: "newEmpRole",
-                    //         message: "What is the employees Role: "
-                    //     }
-                    // ]).then((response) => {
-                    //     
-                    //     })
-                    // })
+                    // get all current roles
+                    pool.query(`SELECT role.id, role.title FROM role;`, function(err, res) {
+                        console.log('ROLES:')
+                        console.log(res.rows);
+                        const roleChoices = res.rows.map(({id, title}) => { return { value: id, name: title } });
+                        // run another nested query to return manager name
+                        pool.query(`SELECT employee.id, CONCAT(employee.first_name, ' ', employee.last_name) AS manager FROM employee WHERE manager_id IS NULL;`, function(err, results) {
+                            console.log('MANAGERS:');
+                            console.log(results.rows);
+                            const managerChoices = results.rows.map(({ id, manager }) => { return { value: id, name: manager }});
+                            inquirer.prompt([
+                                {
+                                    name: 'roleId',
+                                    message: 'What role will this employee have?',
+                                    type: 'list',
+                                    choices: roleChoices
+                                },
+                                {
+                                    name: 'managerId',
+                                    message: `Who is this employee's manager?`,
+                                    type: 'list',
+                                    choices: managerChoices
+                                },
+                                // Prompt for first and last name
+                                {
+                                    name: 'empFName',
+                                    message: `What is this employee's First Name?`,
+                                },
+                                {
+                                    name: 'empLName',
+                                    message: `What is this employee's Last Name?`
+                                },
+                            ]).then(({ roleId, managerId, empFName, empLName}) => {
+                                //console.log(roleId, managerId);
+                                // take the roleId, managerId, firstName, lastName, and run a query to insert the employee into the employee table
+                                pool.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${empFName}', '${empLName}','${roleId}', '${managerId}');`, function (err, res) {
+                                    console.log(`The employee ${empFName} ${empLName} was added to the database`);
+                                    init();
+                                })
+                            });
+                        })
+                    })
+                    //get all current employees
+                   
                     
                 } else if (response.homeChoice == 'Update Employee Role') {
                     // update employee questions
@@ -70,15 +95,9 @@ function init() {
                       });
                     
                 } else if (response.homeChoice == 'Add Role') {
-                    pool.query('SELECT id, name FROM department')
-                        .then(res => res.rows)
-                            .then(departments => {
-                            const departmentChoices = departments.map(department => ({
-                                name: department.name,
-                                value: department.id
-                        }));
-
-                        return inquirer.prompt([
+                    pool.query(`SELECT department.id, department.name FROM department;`, function (err, res) {
+                        const departmentChoices = res.rows.map(({ id, name }) => ({ value: id, name: name }));
+                        inquirer.prompt([
                             {
                                 name: 'addedRole',
                                 message: 'What is the title of the role you would like to add?'
@@ -93,13 +112,14 @@ function init() {
                                 choices: departmentChoices,
                                 message: 'What department does this role belong to?'
                             }
-                        ]);
-                    }).then((response) => {
-                        pool.query(`INSERT INTO role (title, salary, department) VALUES ('${response.addedRole}', '${response.roleIncome}', '${response.belongsToDepo}')`, function (err, res) {
-                            console.log(`${response.addedRole} has been added`);
-                            init();
-                        })
-                    })
+                        ]).then(({ addedRole, roleIncome, belongsToDepo }) => {
+                            pool.query(`INSERT INTO role (title, salary, department) VALUES ('${addedRole}', '${roleIncome}', '${belongsToDepo}');`, function (err, res) {
+                                console.log(`${addedRole} has been added`);
+                                init();
+                            });
+                        });
+                    });
+                    
                     
                 } else if (response.homeChoice == 'View All Departments') {
                     pool.query(`SELECT * FROM department;`, function (err, res) {

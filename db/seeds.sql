@@ -44,3 +44,34 @@ INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES
 --     department ON role.department = department.id
 -- LEFT JOIN
 --     employee AS manager ON employee.manager_id = manager.id;
+
+-- // pool.query('SELECT id, name FROM department')
+--                     //     .then(res => res.rows)
+--                     //         .then(departments => {
+--                     //         let departmentChoices = departments.map(department => ({
+--                     //             name: department.name,
+--                     //             value: department.id
+--                     //     }));
+
+--                     //     return inquirer.prompt([
+--                     //         {
+--                     //             name: 'addedRole',
+--                     //             message: 'What is the title of the role you would like to add?'
+--                     //         },
+--                     //         {
+--                     //             name: 'roleIncome',
+--                     //             message: 'What is the salary of the role?'
+--                     //         },
+--                     //         {
+--                     //             name: 'belongsToDepo',
+--                     //             type: 'list',
+--                     //             choices: departmentChoices,
+--                     //             message: 'What department does this role belong to?'
+--                     //         }
+--                     //     ]);
+--                     // }).then((response) => {
+--                     //     pool.query(`INSERT INTO role (title, salary, department) VALUES ('${response.addedRole}', '${response.roleIncome}', '${response.belongsToDepo}')`, function (err, res) {
+--                     //         console.log(`${response.addedRole} has been added`);
+--                     //         init();
+--                     //     })
+--                     // })
