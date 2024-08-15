@@ -41,13 +41,13 @@ function init() {
                 } else if (response.homeChoice == 'Add Employee') {
                     // get all current roles
                     pool.query(`SELECT role.id, role.title FROM role;`, function(err, res) {
-                        console.log('ROLES:')
-                        console.log(res.rows);
+                        //console.log('ROLES:')
+                        //console.log(res.rows);
                         const roleChoices = res.rows.map(({id, title}) => { return { value: id, name: title } });
                         // run another nested query to return manager name
                         pool.query(`SELECT employee.id, CONCAT(employee.first_name, ' ', employee.last_name) AS manager FROM employee WHERE manager_id IS NULL;`, function(err, results) {
-                            console.log('MANAGERS:');
-                            console.log(results.rows);
+                            //console.log('MANAGERS:');
+                            //console.log(results.rows);
                             const managerChoices = results.rows.map(({ id, manager }) => { return { value: id, name: manager }});
                             inquirer.prompt([
                                 {
@@ -136,7 +136,7 @@ function init() {
                             }
                         ]).then(({ addedRole, roleIncome, belongsToDepo }) => {
                             pool.query(`INSERT INTO role (title, salary, department) VALUES ('${addedRole}', '${roleIncome}', '${belongsToDepo}');`, function (err, res) {
-                                console.log(`${addedRole} has been added`);
+                                console.log(`The ${addedRole} role has been added`);
                                 init();
                             });
                         });
@@ -145,7 +145,7 @@ function init() {
                     
                 } else if (response.homeChoice == 'View All Departments') {
                     pool.query(`SELECT * FROM department;`, function (err, res) {
-                        console.log(res.rows);
+                        //console.log(res.rows);
                         console.table(res.rows);
                         init();
                     });
@@ -158,7 +158,7 @@ function init() {
                         }
                     ]).then((response) => {
                         pool.query(`INSERT INTO department (name) VALUES ('${response.addedDepo}');`, function (err, res) {
-                            console.log(`${response.addedRole} has been added to departments`);
+                            console.log(`${response.addedDepo} has been added to departments`);
                             init();
                         })
                     })
