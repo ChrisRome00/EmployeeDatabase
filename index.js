@@ -81,13 +81,35 @@ function init() {
                             });
                         })
                     })
-                    //get all current employees
                    
-                    
                 } else if (response.homeChoice == 'Update Employee Role') {
-                    // update employee questions
-                    //run init
-                    
+                  // Get all employees
+                    pool.query( `SELECT id, CONCAT(first_name, ' ', last_name) AS name FROM employee;`, function (err, res) {
+                        const employeeChoices = res.rows.map(({ id, name }) => ({ value: id, name: name }));
+                        // Get all roles
+                        pool.query(`SELECT id, title FROM role;`, function (err, results) {
+                            const roleChoices = results.rows.map(({ id, title }) => ({ value: id, name: title }));
+                            inquirer.prompt([
+                                {
+                                    name: "empChoice",
+                                    message: "Which employee's role do you want to update?",
+                                    type: "list",
+                                    choices: employeeChoices,
+                                },
+                                {
+                                    name: "roleChoice",
+                                    message: "What is the new role for this employee?",
+                                    type: "list",
+                                    choices: roleChoices,
+                              },
+                            ]).then(({ empChoice, roleChoice }) => {
+                                pool.query(`UPDATE employee SET role_id = ${roleChoice} WHERE id = ${empChoice};`, function (err, res) {
+                                    console.log(`Employee's role has been updated!`);
+                                    init();
+                                });
+                            });
+                        });
+                    });
                 } else if (response.homeChoice == 'View All Roles') {
                     pool.query(`SELECT * FROM role`, function (err, res) {
                         console.table(res.rows);
